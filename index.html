@@ -2,62 +2,144 @@
 <html>
 <head>
   <title>Quiz</title>
+  <style>
+    body {
+      background: linear-gradient(90deg, #ff00cc, #333399);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      flex-direction: column;
+      color: white;
+      font-family: Arial;
+    }
+
+    #game, #leaderboard {
+      display: none;
+      text-align: center;
+    }
+
+    input {
+      padding: 5px;
+      margin: 5px;
+    }
+
+    button {
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 
-<body style="text-align:center;">
+<body>
 
+<!-- START -->
+<div id="start">
   <h2>Quiz Game</h2>
+  <input id="nama" placeholder="Masukkan nama">
+  <br>
+  <button onclick="mulai()">Mulai</button>
+</div>
 
-  <p id="soal"></p>
-
+<!-- GAME -->
+<div id="game">
+  <h3 id="soal"></h3>
   <input id="jawaban" type="text" placeholder="jawaban">
-
   <br><br>
-
   <button onclick="cek()">Kirim</button>
-
   <p id="hasil"></p>
+</div>
 
-  <script>
-    let nomor = 0;
-    let nilai = 0;
-    let salahList = "";
+<!-- LEADERBOARD -->
+<div id="leaderboard">
+  <h2>Leaderboard</h2>
+  <div id="listSkor"></div>
+  <br>
+  <button onclick="ulang()">Main Lagi</button>
+</div>
 
-    let soal = [ 
-      { q: "simpul apa yang di butuh untuk membuat tandu", a: "Pangkal dan jangkar" },
-      { q: "jika ingin membuat kaki tiga simpul apa yg di pakai pertama", a: "Pangkal" },
-      { q: "NPNYX QNQH?", a: "Acak dadu" },
-      { q: "ano bonaparte coba coba ....", a: "Dominan" },
-      { q: "setelah membuat kaki 3 berdiri simpul apa yg harus di buat selanjutnya", a: "Rantai"},
-    ];
+<script>
+let nomor = 0;
+let nilai = 0;
+let nama = "";
 
+let soal = [
+  { q: "simpul apa yang di butuh untuk membuat tandu", a: "Pangkal dan jangkar" },
+  { q: "jika ingin membuat kaki tiga simpul apa yg di pakai pertama", a: "Pangkal" },
+  { q: "NPNX QNQH?", a: "Acak dadu" },
+  { q: "ano bonaparte coba coba ....", a: "Dominan" },
+  { q: "setelah membuat kaki 3 berdiri simpul apa yg harus di buat selanjutnya", a: "Rantai"},
+];
+
+function mulai() {
+  nama = document.getElementById("nama").value;
+
+  if (nama == "") {
+    alert("Isi nama dulu!");
+    return;
+  }
+
+  document.getElementById("start").style.display = "none";
+  document.getElementById("game").style.display = "block";
+
+  document.getElementById("soal").innerHTML = soal[nomor].q;
+}
+
+function cek() {
+  let jawab = document.getElementById("jawaban").value;
+
+  if (jawab == soal[nomor].a) {
+    nilai += 10;
+  }
+
+  nomor++;
+  document.getElementById("jawaban").value = "";
+
+  if (nomor < soal.length) {
     document.getElementById("soal").innerHTML = soal[nomor].q;
+  } else {
+    simpanSkor();
 
-    function cek() {
-      let jawab = document.getElementById("jawaban").value;
+    document.getElementById("game").style.display = "none";
+    document.getElementById("leaderboard").style.display = "block";
 
-      if (jawab == soal[nomor].a) {
-        nilai += 10;
-      } else {
-        salahList += "Soal " + (nomor + 1) +
-        " salah. Jawaban benar: " + soal[nomor].a + "<br>";
-      }
+    tampilSkor();
+  }
+}
 
-      nomor++;
+function simpanSkor() {
+  let data = JSON.parse(localStorage.getItem("skorQuiz")) || [];
 
-      document.getElementById("jawaban").value = "";
+  data.push({
+    nama: nama,
+    nilai: nilai
+  });
 
-      if (nomor < soal.length) {
-        document.getElementById("soal").innerHTML = soal[nomor].q;
-      } else {
-        document.getElementById("soal").innerHTML = "Quiz selesai!";
+  localStorage.setItem("skorQuiz", JSON.stringify(data));
+}
 
-        document.getElementById("hasil").innerHTML =
-          "Nilai kamu: " + nilai + "/" + (soal.length * 10) +
-          "<br><br>" + salahList;
-      }
-    }
-  </script>
+function tampilSkor() {
+  let data = JSON.parse(localStorage.getItem("skorQuiz")) || [];
+
+  data.sort((a, b) => b.nilai - a.nilai);
+
+  let html = "";
+  data.forEach((d, i) => {
+    html += (i + 1) + ". " + d.nama + " - " + d.nilai + "<br>";
+  });
+
+  document.getElementById("listSkor").innerHTML = html;
+}
+
+function ulang() {
+  nomor = 0;
+  nilai = 0;
+
+  document.getElementById("leaderboard").style.display = "none";
+  document.getElementById("start").style.display = "block";
+}
+</script>
 
 </body>
 </html>
