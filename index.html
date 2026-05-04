@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Quiz</title>
+</head>
+
+<body style="text-align:center;">
+
+  <h2>Quiz Game</h2>
+
+  <p id="soal"></p>
+
+  <input id="jawaban" type="text" placeholder="jawaban">
+
+  <br><br>
+
+  <button onclick="cek()">Kirim</button>
+
+  <p id="hasil"></p>
+
+  <script>
+    let nomor = 0;
+    let nilai = 0;
+    let salahList = "";
+
+    let soal = [ 
+      { q: "simpul apa yang di butuh untuk membuat tandu", a: "Pangkal dan jangkar" },
+      { q: "jika ingin membuat kaki tiga simpul apa yg di pakai pertama", a: "Pangkal" },
+      { q: "NPNYX QNQH?", a: "Acak dadu" },
+      { q: "ano bonaparte coba coba ....", a: "Dominan" },
+      { q: "setelah membuat kaki 3 berdiri simpul apa yg harus di buat selanjutnya", a: "Rantai"},
+    ];
+
+    document.getElementById("soal").innerHTML = soal[nomor].q;
+
+    function cek() {
+      let jawab = document.getElementById("jawaban").value;
+
+      if (jawab == soal[nomor].a) {
+        nilai += 10;
+      } else {
+        salahList += "Soal " + (nomor + 1) +
+        " salah. Jawaban benar: " + soal[nomor].a + "<br>";
+      }
+
+      nomor++;
+
+      document.getElementById("jawaban").value = "";
+
+      if (nomor < soal.length) {
+        document.getElementById("soal").innerHTML = soal[nomor].q;
+      } else {
+        document.getElementById("soal").innerHTML = "Quiz selesai!";
+
+        document.getElementById("hasil").innerHTML =
+          "Nilai kamu: " + nilai + "/" + (soal.length * 10) +
+          "<br><br>" + salahList;
+      }
+    }
+  </script>
+
+</body>
+</html>
